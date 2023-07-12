@@ -1,3 +1,24 @@
+
+import { initializeApp } from "firebase/app";
+import {getFirestore, collection, getDocs} from "firebase/firestore/lite"
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAW2b0K0hYl197JR41P1QNmWNX7njf-xNE",
+  authDomain: "vanlife-94689.firebaseapp.com",
+  projectId: "vanlife-94689",
+  storageBucket: "vanlife-94689.appspot.com",
+  messagingSenderId: "1080445695231",
+  appId: "1:1080445695231:web:4f314fe8cd9287f04f88ca"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app)
+
+const vansCollectionRef = collection(db, "vans")
+
+
 // A function whose only purpose is to delay execution
 // for the specified # of milliseconds when used w/ `await`
 // e.g. inside an async function:
@@ -7,18 +28,28 @@ function sleep(ms) {
 }
 
 export async function getVans(id) {
-    const url = id ? `/api/vans/${id}` : "/api/vans"
-    const res = await fetch(url)
-    if (!res.ok) {
-        throw {
-            message: "Failed to fetch vans",
-            statusText: res.statusText,
-            status: res.status
-        }
-    }
-    const data = await res.json()
-    return data.vans
+    const snapshot = await getDocs(vansCollectionRef)
+    const vans = snapshot.docs.map(doc => ({
+        ...doc.data(), // actual data of the doc
+        id: doc.id // not included by default by firestore
+    }))
+    return(vans)
 }
+
+
+// export async function getVans(id) {
+//     const url = id ? `/api/vans/${id}` : "/api/vans"
+//     const res = await fetch(url)
+//     if (!res.ok) {
+//         throw {
+//             message: "Failed to fetch vans",
+//             statusText: res.statusText,
+//             status: res.status
+//         }
+//     }
+//     const data = await res.json()
+//     return data.vans
+// }
 
 export async function getHostVans(id) {
     const url = id ? `/api/host/vans/${id}` : "/api/host/vans"
