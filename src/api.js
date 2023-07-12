@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import {getFirestore, collection, getDocs} from "firebase/firestore/lite"
+import {getFirestore, collection, doc, getDocs, getDoc} from "firebase/firestore/lite"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -34,6 +34,12 @@ export async function getVans(id) {
         id: doc.id // not included by default by firestore
     }))
     return(vans)
+}
+
+export async function getVan(id) {
+    const docRef = doc(db, "vans", id)
+    const snapshot = await getDoc(docRef)
+    return {...snapshot.data(), id: snapshot.id}
 }
 
 
